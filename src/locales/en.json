@@ -1,0 +1,13 @@
+{
+  "home": {
+    "title": "The Rooftops of Ludovia",
+    "subtitle": "A game about thefts and crafty unfortunate events.",
+    "newGame": "New Game",
+    "resumeGame": "Resume Game",
+    "howToPlay": "How to Play"
+  },
+  "howToPlay": {
+    "title": "How to Play",
+    "back": "Back"
+  }
+}
