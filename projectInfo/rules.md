@@ -67,6 +67,7 @@ Implications:
 - The Black Market's connector-alley is the **only street-touching alley** in a type-(a) tile. All other alleys (in b/c/d) are edge-adjacent in their natural orientation and become edge-adjacent on a different side after rotation.
 - Reaching the BM from a street is always at minimum: street → connector alley → BM (2 APs).
 - Cops watch streets only — alleys (regular and BM) are always safe from arrest. The BM has no special cop-visibility rules; it behaves as an alley.
+- For **movement adjacency** the BM is also just an alley: a thief on an adjacent rooftop may climb down to the BM (and vice versa), in addition to entering through the connector alley. The "connector" name reflects the layout (it's the alley adjacent to the BM and the block edge), not a mechanical chokepoint.
 - Jump-across-block availability depends on whether both the source and destination row-0/row-2 cells of the two adjacent tiles are rooftops (alleys aren't jump targets).
 
 ### Rooftop deck (treasure + events)
@@ -217,6 +218,7 @@ When you're in Prison: same UI but the cop sub-phase shows "choose result" not "
 - **Rooftop slot empty after Rabbit's Foot** — slot remains empty; rob action is no longer legal there.
 - **Equipment hand limit hit by Event:Equipment draw** — discard the excess immediately (player chooses which).
 - **Cop max** (`players + 1`) — Stake-out events past the cap have no effect (cop placement is skipped).
+- **Multiple cops on one lamp post** — allowed. Lamp posts have no occupancy limit beyond the global cop cap; cops can be auto-placed, advance into, or Stake-out onto a post already holding another cop. "Patrol clusters" are a legal emergent dynamic.
 - **Black Market offer not refilling** — equipment deck never reshuffles. The Black Market shrinks (3 → 2 → 1 → 0) as the deck empties. "Buy" stays legal as long as ≥1 card is on offer.
 - **Convicted + zero treasures** — possible if the trial is triggered but the player only has 1 treasure and it's chosen for the conviction discard. Subsequent turns in Prison fall through the "no treasures → released" path.
 - **Multiple players reach 15 F&F in the same turn** — only possible via stealing; highest converts first wins. Use turn-order priority.

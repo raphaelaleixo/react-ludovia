@@ -9,5 +9,138 @@
   "howToPlay": {
     "title": "How to Play",
     "back": "Back"
+  },
+  "join": {
+    "title": "Join a game",
+    "subtitle": "Enter the code shown on the host's screen.",
+    "codeLabel": "Room code",
+    "submit": "Continue"
+  },
+  "room": {
+    "notFound": "Room not found",
+    "notFoundHint": "Check the code and try again.",
+    "started": "Room {{roomId}}",
+    "seatsLine": "Seats: {{seats}}",
+    "statsLine": "{{rooftops}} rooftops left · {{offer}} on offer · {{draw}} equipment in draw · {{cops}} cops",
+    "turnLine": "Next to act: {{name}}",
+    "gameOver": "Heist over",
+    "winner": "Great Thief: {{names}}",
+    "panel": {
+      "roomCode": "Room",
+      "turn": "On the clock",
+      "ap": "{{ap}} AP",
+      "inPrison": "(in prison)",
+      "thieves": "Thieves",
+      "fnf": "F&F",
+      "decks": "Decks",
+      "rooftopsLeft": "Rooftops left",
+      "onOffer": "On offer",
+      "equipmentDraw": "Equipment draw",
+      "cops": "Cops"
+    }
+  },
+  "lobby": {
+    "title": "Pick a thief",
+    "codeLabel": "Room code",
+    "players": "Players: {{ready}} / {{max}}",
+    "startGame": "Start heist",
+    "readyToStart": "Ready when you are.",
+    "waitingFor_one": "Waiting for 1 more thief…",
+    "waitingFor_other": "Waiting for {{count}} more thieves…"
+  },
+  "playerJoin": {
+    "title": "Pick a name",
+    "subtitle": "Joining room {{roomId}}.",
+    "nameLabel": "Your name",
+    "submit": "Join",
+    "joining": "Joining…",
+    "failed": "Could not join the room.",
+    "alreadyStarted": "This game has already started."
+  },
+  "player": {
+    "unnamed": "Thief",
+    "invalidSlot": "That seat doesn't exist.",
+    "waitingForHost": "You're in. Waiting for the host to start the heist…",
+    "waitingForTurn": "Waiting for {{name}}…",
+    "fnfLine": "F&F {{fnf}} · {{treasures}} treasure(s) · {{equipment}} equipment",
+    "treasuresTitle": "Treasures ({{count}}/{{max}})",
+    "treasuresEmpty": "No treasures yet — rob a rooftop.",
+    "treasureValue": "${{value}}",
+    "convert": "+{{value}} F&F",
+    "convertHint": "Return to the Lair to convert your loot.",
+    "gameOver": "Heist over",
+    "winnerLine": "Great Thief: {{names}}",
+    "yourFnf": "You finished with {{fnf}} F&F.",
+    "gameUiTodo": "Game UI coming soon."
+  },
+  "copMove": {
+    "prompt": "Pick a cop and roll:",
+    "roll": "Roll the cop die",
+    "prisonPrompt": "You're in Prison — pick a cop and choose the result:",
+    "chooseLeft": "Turn left",
+    "chooseRight": "Turn right",
+    "chooseAdvance": "Advance"
+  },
+  "trial": {
+    "title": "Trial time",
+    "blurb": "Roll a die. 6 acquits you. 1-5 convicts: discard one treasure and your turn ends.",
+    "roll": "Roll the trial die"
+  },
+  "rabbitsFoot": {
+    "title": "Bad luck on the roof",
+    "blurb": "You just revealed an event. Burn a Rabbit's Foot to cancel it (the rooftop slot stays empty, your turn continues).",
+    "cancel": "Cancel the event (discard Rabbit's Foot)",
+    "skip": "Let it happen"
+  },
+  "actions": {
+    "title": "Your turn — {{ap}} AP",
+    "positionLabel": "Standing: {{pos}}",
+    "rob": "Rob this house",
+    "steal": "Steal from a thief",
+    "stealOne": "Steal from {{name}}",
+    "stealPickTarget": "Whose pocket?",
+    "knockdown": "Knock down a thief",
+    "knockdownOne": "Knock down {{name}}",
+    "knockdownPickTarget": "Knock down whom?",
+    "knockdownPickStreet": "Drop them on which street?",
+    "knockdownStreetLabel": "{{side}} street",
+    "gear": "Your gear",
+    "passive": "passive",
+    "useMakeup": "Use",
+    "useBolas": "Use",
+    "useMonkey": "Use",
+    "useWhistle": "Use (1 AP)",
+    "useParachute": "Use (1 AP)",
+    "bolasPickTarget": "Knock down whom?",
+    "bolasPickStreet": "Drop them on which street?",
+    "monkeyPickTarget": "Whose pocket?",
+    "monkeyPickTreasure": "Take which treasure?",
+    "whistlePickCop": "Which cop to move?",
+    "parachutePickStreet": "Land on which street?",
+    "buyTitle": "Black Market",
+    "buyEmpty": "Sold out.",
+    "buyCost": "${{cost}}",
+    "buyHandFull": "Equipment hand is full — drop one to buy.",
+    "cancel": "Cancel",
+    "endTurn": "End turn"
+  },
+  "equipment": {
+    "whistle": "Whistle",
+    "parachute": "Parachute",
+    "rope-and-grapple": "Rope & Grapple",
+    "mask": "Mask",
+    "fishing-pole": "Fishing Pole",
+    "bolas": "Bolas",
+    "trained-monkey": "Trained Monkey",
+    "make-up": "Make-up",
+    "rabbits-foot": "Rabbit's Foot"
+  },
+  "position": {
+    "lair": "Lair",
+    "prison": "Prison",
+    "rooftop": "Rooftop",
+    "alley": "Alley",
+    "blackMarket": "Black Market",
+    "street": "Street"
   }
 }

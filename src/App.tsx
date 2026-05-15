@@ -10,6 +10,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import theme from "./theme/theme";
+import { GameProvider } from "./contexts/GameContext";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const HowToPlayPage = lazy(() => import("./pages/HowToPlayPage"));
@@ -48,9 +49,48 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Suspense fallback={<RouteFallback />}>
-        <RouterProvider router={router} />
-      </Suspense>
+      <GlobalSvgFilters />
+      <GameProvider>
+        <Suspense fallback={<RouteFallback />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </GameProvider>
     </ThemeProvider>
+  );
+}
+
+/**
+ * Hidden SVG that defines reusable filters. Referenced via CSS
+ * `filter: url(#ludovia-wobble)` on bordered elements that want to read as
+ * hand-drawn rather than CSS-perfect.
+ */
+function GlobalSvgFilters() {
+  return (
+    <svg
+      width="0"
+      height="0"
+      style={{ position: "absolute" }}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <defs>
+        <filter id="ludovia-wobble" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.02"
+            numOctaves="2"
+            seed="3"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="1.2"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </defs>
+    </svg>
   );
 }
