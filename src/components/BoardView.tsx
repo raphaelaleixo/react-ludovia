@@ -1420,22 +1420,26 @@ function AnimationLayer({
             transform: "translateY(0) scale(0.95) rotate(540deg)",
           },
         },
-        // Cartoon landing puff: three offset clouds that scale outward
-        // and fade. Delay matches the slide so it appears right as the
-        // pawn lands.
+        // Cartoon landing puff: pops outward from nothing, peaks, then
+        // shrinks back to nothing — purely via scale so the cloud stays
+        // crisp (no fading paper edges). Delay matches the slide so it
+        // appears right as the pawn lands.
         "@keyframes landing-puff": {
-          "0%": { opacity: 0, transform: "translate(-50%, -50%) scale(0.3)" },
-          "20%": {
-            opacity: 0.85,
-            transform: "translate(-50%, -50%) scale(0.9)",
+          "0%": {
+            transform: "translate(-50%, -50%) scale(0)",
+            opacity: 1,
           },
-          "60%": {
-            opacity: 0.55,
-            transform: "translate(-50%, -50%) scale(1.3)",
+          "30%": {
+            transform: "translate(-50%, -50%) scale(1.05)",
+            opacity: 1,
+          },
+          "55%": {
+            transform: "translate(-50%, -50%) scale(1.4)",
+            opacity: 1,
           },
           "100%": {
+            transform: "translate(-50%, -50%) scale(1.55)",
             opacity: 0,
-            transform: "translate(-50%, -50%) scale(1.7)",
           },
         },
       }}
@@ -1450,8 +1454,9 @@ function AnimationLayer({
             left: landingPos.x,
             top: landingPos.y,
             pointerEvents: "none",
-            opacity: 0,
-            animation: `landing-puff ${ANIM_JUMP_TAIL_MS}ms ease-out ${ANIM_STEP_MS - 60}ms forwards`,
+            // Backwards fill-mode applies the 0% keyframe (scale 0) during
+            // the slide so the cloud is invisible until landing.
+            animation: `landing-puff ${ANIM_JUMP_TAIL_MS}ms ease-out ${ANIM_STEP_MS - 60}ms both`,
           }}
         >
           <LandingPuff />
@@ -1532,20 +1537,43 @@ function AnimationLayer({
   );
 }
 
-// A small cream cartoon smoke puff: three overlapping ellipses with ink
-// outlines, sized to read at the pawn's landing spot.
+// A small cream cartoon smoke puff: a handful of overlapping ellipses
+// with ink outlines, generated with fresh random sizes / positions on
+// every mount so no two landings produce the same cloud.
 function LandingPuff() {
+  const puffs = useMemo(() => {
+    const count = 3 + Math.floor(Math.random() * 3); // 3..5
+    return Array.from({ length: count }, () => ({
+      cx: 10 + Math.random() * 22,
+      cy: 8 + Math.random() * 14,
+      rx: 4 + Math.random() * 5,
+      ry: 3 + Math.random() * 4,
+      rot: -20 + Math.random() * 40,
+    }));
+  }, []);
+  const wobble = useMemo(() => -8 + Math.random() * 16, []);
   return (
     <Box
       component="svg"
       viewBox="0 0 40 28"
-      sx={{ width: 40, height: 28, overflow: "visible" }}
+      sx={{
+        width: 40,
+        height: 28,
+        overflow: "visible",
+        transform: `rotate(${wobble}deg)`,
+      }}
     >
       <g fill={ink.paper} stroke={ink.ink} strokeWidth="1.2">
-        <ellipse cx="12" cy="18" rx="7" ry="5" />
-        <ellipse cx="22" cy="14" rx="9" ry="6" />
-        <ellipse cx="32" cy="19" rx="6" ry="4.5" />
-        <ellipse cx="18" cy="22" rx="4" ry="3" />
+        {puffs.map((p, i) => (
+          <ellipse
+            key={i}
+            cx={p.cx}
+            cy={p.cy}
+            rx={p.rx}
+            ry={p.ry}
+            transform={`rotate(${p.rot} ${p.cx} ${p.cy})`}
+          />
+        ))}
       </g>
     </Box>
   );

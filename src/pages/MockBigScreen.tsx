@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  Typography,
+  type SelectChangeEvent,
+} from "@mui/material";
 import BoardView from "../components/BoardView";
 import BoardStage from "../components/BoardStage";
 import SidePanel from "../components/SidePanel";
@@ -23,9 +30,11 @@ type MockAction =
   | Action
   | { kind: "_step-cop"; copId: string; roll: DieFace }
   | { kind: "_step-thief"; playerId: string }
-  | { kind: "_jump-thief"; forceFail?: boolean };
+  | { kind: "_jump-thief"; forceFail?: boolean }
+  | { kind: "_reset"; state: GameState };
 
 function mockReducer(state: GameState, action: MockAction): GameState {
+  if (action.kind === "_reset") return action.state;
   if (action.kind === "_step-cop") {
     // Force the turn back to the police-move sub-phase before each demo
     // cop step so we can keep dispatching cop-move-pick after the reducer
@@ -142,28 +151,44 @@ export default function MockBigScreen() {
     dispatch({ kind: "clear-animation" });
   }, []);
 
-  const stepCop = useCallback(() => {
-    if (gameState.cops.length === 0) return;
-    const cop =
-      gameState.cops[Math.floor(Math.random() * gameState.cops.length)];
-    const roll = (Math.floor(Math.random() * 6) + 1) as DieFace;
-    dispatch({ kind: "_step-cop", copId: cop.id, roll });
-  }, [gameState]);
+  const runDemo = useCallback(
+    (action: DevAction) => {
+      switch (action) {
+        case "step-cop": {
+          if (gameState.cops.length === 0) return;
+          const cop =
+            gameState.cops[
+              Math.floor(Math.random() * gameState.cops.length)
+            ];
+          const roll = (Math.floor(Math.random() * 6) + 1) as DieFace;
+          dispatch({ kind: "_step-cop", copId: cop.id, roll });
+          return;
+        }
+        case "step-thief": {
+          const eligible = gameState.players.filter(
+            (p) => p.status !== "prison",
+          );
+          if (eligible.length === 0) return;
+          const p =
+            eligible[Math.floor(Math.random() * eligible.length)];
+          dispatch({ kind: "_step-thief", playerId: p.id });
+          return;
+        }
+        case "jump-thief":
+          dispatch({ kind: "_jump-thief" });
+          return;
+        case "fail-jump":
+          dispatch({ kind: "_jump-thief", forceFail: true });
+          return;
+      }
+    },
+    [gameState],
+  );
 
-  const stepThief = useCallback(() => {
-    // Pick a non-prison player at random and walk them one step.
-    const eligible = gameState.players.filter((p) => p.status !== "prison");
-    if (eligible.length === 0) return;
-    const p = eligible[Math.floor(Math.random() * eligible.length)];
-    dispatch({ kind: "_step-thief", playerId: p.id });
-  }, [gameState]);
-
-  const jumpThief = useCallback(() => {
-    dispatch({ kind: "_jump-thief" });
-  }, []);
-
-  const failJump = useCallback(() => {
-    dispatch({ kind: "_jump-thief", forceFail: true });
+  const regenerate = useCallback(() => {
+    const newSeed = Math.floor(Math.random() * 1e9);
+    setSeed(newSeed);
+    dispatch({ kind: "_reset", state: buildMockGameState(newSeed) });
   }, []);
 
   return (
@@ -202,11 +227,8 @@ export default function MockBigScreen() {
           </Box>
           <DevControls
             seed={seed}
-            onRegenerate={() => setSeed(Math.floor(Math.random() * 1e9))}
-            onStepCop={stepCop}
-            onStepThief={stepThief}
-            onJumpThief={jumpThief}
-            onFailJump={failJump}
+            onRun={runDemo}
+            onRegenerate={regenerate}
             animating={gameState.pendingMoves.length > 0}
           />
         </Box>
@@ -318,27 +340,34 @@ function mockCops(board: Board): Cop[] {
   ];
 }
 
+// Demo actions in the select. Regenerate stays its own button below the
+// run row since it resets state rather than dispatching a game action.
+type DevAction = "step-cop" | "step-thief" | "jump-thief" | "fail-jump";
+
+const DEV_ACTIONS: { id: DevAction; label: string }[] = [
+  { id: "step-cop", label: "Move a policeman" },
+  { id: "step-thief", label: "Move a thief" },
+  { id: "jump-thief", label: "Jump a thief" },
+  { id: "fail-jump", label: "Make a thief fall" },
+];
+
 // Dev-only panel that lives below the normal SidePanel in the mock view.
-// Provides tools to step the game state without playing through a real
-// game (regenerate the board, dispatch a demo cop move, etc.). Visually
-// separated from the production panel by a "DEV" label + tinted bg.
+// A single select picks the demo action; the Run button dispatches it.
 function DevControls({
   seed,
+  onRun,
   onRegenerate,
-  onStepCop,
-  onStepThief,
-  onJumpThief,
-  onFailJump,
   animating,
 }: {
   seed: number;
+  onRun: (action: DevAction) => void;
   onRegenerate: () => void;
-  onStepCop: () => void;
-  onStepThief: () => void;
-  onJumpThief: () => void;
-  onFailJump: () => void;
   animating: boolean;
 }) {
+  const [action, setAction] = useState<DevAction>("step-cop");
+  const handleChange = (e: SelectChangeEvent<DevAction>) => {
+    setAction(e.target.value as DevAction);
+  };
   return (
     <Box
       sx={{
@@ -376,42 +405,43 @@ function DevControls({
         </Typography>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={onStepCop}
-          disabled={animating}
-          fullWidth
-        >
-          Move a policeman
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={onStepThief}
-          disabled={animating}
-          fullWidth
-        >
-          Move a thief
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={onJumpThief}
-          disabled={animating}
-          fullWidth
-        >
-          Jump a thief
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={onFailJump}
-          disabled={animating}
-          fullWidth
-        >
-          Make a thief fall
-        </Button>
+        <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+          <Select
+            size="small"
+            value={action}
+            onChange={handleChange}
+            sx={{
+              flex: 1,
+              fontSize: 13,
+              color: ink.paper,
+              bgcolor: "rgba(0,0,0,0.25)",
+              "& .MuiSelect-icon": { color: ink.paper },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: ink.nightHatch,
+              },
+            }}
+            MenuProps={{
+              slotProps: {
+                paper: { sx: { bgcolor: ink.nightDeep, color: ink.paper } },
+              },
+            }}
+          >
+            {DEV_ACTIONS.map((opt) => (
+              <MenuItem key={opt.id} value={opt.id} sx={{ fontSize: 13 }}>
+                {opt.label}
+              </MenuItem>
+            ))}
+          </Select>
+          <Button
+            size="small"
+            variant="contained"
+            color="secondary"
+            disabled={animating}
+            onClick={() => onRun(action)}
+          >
+            Run
+          </Button>
+        </Box>
         <Button
           size="small"
           variant="outlined"
